@@ -8,7 +8,7 @@ export default {
   // 讲师列表
   getTeacherByPage(page, limit, teacherQuery) {
     return request({
-      url: `/admin/edu/teacher/teachers/${page}/${limit}`,
+      url: `/admin/eduservice/teacher/teachers/${page}/${limit}`,
       method: 'post',
       data: teacherQuery
     })
@@ -17,7 +17,7 @@ export default {
   // 添加讲师
   save(teacher) {
     return request({
-      url: `/admin/edu/teacher/addTeacher`,
+      url: `/admin/eduservice/teacher/addTeacher`,
       method: 'post',
       data: teacher
     })
@@ -26,7 +26,7 @@ export default {
   // 删除讲师
   removeById(id) {
     return request({
-      url: `/admin/edu/teacher/${id}`,
+      url: `/admin/eduservice/teacher/${id}`,
       method: 'delete'
     })
   },
@@ -34,14 +34,14 @@ export default {
   // 根据id查询老师
   getTeacherById(id) {
     return request({
-      url: `/admin/edu/teacher/getTeacher/${id}`,
+      url: `/admin/eduservice/teacher/getTeacher/${id}`,
       method: 'get'
     })
   },
   // 根据id修改
   updateTeacher(teacher) {
     return request({
-      url: `/admin/edu/teacher/updateTeacher`,
+      url: `/admin/eduservice/teacher/updateTeacher`,
       method: 'post',
       data: teacher
     })
