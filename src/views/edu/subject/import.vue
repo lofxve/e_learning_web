@@ -35,8 +35,6 @@
 </template>
 
 <script>
-  // 引入调用
-  import api from '@/api/teacher/teacher.js'
 
   export default {
     // 写核心代码
@@ -57,11 +55,24 @@
       },
 
       fileUploadSuccess(response) {
-
+        if (response.success === true) {
+          this.fileUploadBtnText = '导入成功'
+          this.loading = false
+          this.$message({
+            type: 'success',
+            message: response.message
+          })
+          this.$router.push({path:'/edu/subject/list'})
+        }
       },
 
       fileUploadError(response) {
-
+        this.fileUploadBtnText = '导入失败'
+        this.loading = false
+        this.$message({
+          type: 'error',
+          message: '导入失败'
+        })
       }
     },
     created() {

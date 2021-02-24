@@ -60,7 +60,7 @@
 </template>
 
 <script>
-  import api from '@/api/teacher/teacher.js'
+  import api from '@/api/edu/teacher.js'
   import ImageCropper from '@/components/ImageCropper'
   import PanThumb from '@/components/PanThumb'
 

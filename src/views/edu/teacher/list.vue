@@ -109,7 +109,7 @@
 
 <script>
   // 引入调用
-  import api from '@/api/teacher/teacher.js'
+  import api from '@/api/edu/teacher.js'
 
   export default {
     // 写核心代码
