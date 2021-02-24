@@ -45,5 +45,12 @@ export default {
       method: 'post',
       data: teacher
     })
+  },
+  // 获取所有老师
+  getList() {
+    return request({
+      url: `/admin/eduservice/teacher/findAll`,
+      method: 'get'
+    })
   }
 }
