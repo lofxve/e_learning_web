@@ -98,6 +98,7 @@
   const defaultForm = {
     title: '',
     subjectId: '',
+    subjectParentId: '',
     teacherId: '',
     lessonNum: 0,
     description: '',
@@ -127,13 +128,36 @@
 
     methods: {
       init() {
-        this.getTeacherList()
-        this.initSubjectList()
         if (this.$route.params && this.$route.params.id) {
-          const id = this.$route.params.id
+          const courseId = this.$route.params.id
+          this.getCourseInfo(courseId)
         } else {
           this.courseInfo = { ...defaultForm }
+          this.getTeacherList()
+          this.initSubjectList()
         }
+      },
+      // 获取课程信息
+      getCourseInfo(courseId) {
+        course.getCourseInfo(courseId)
+          .then(response => {
+            this.courseInfo = response.data.itmes
+            // 查询所有分类。包括一级和二级分类
+            subject.getNestedTreeList().then(response => {
+              // 获取所有一级分类
+              this.subjectNestedList = response.data.items
+              for (var i = 0; i < this.subjectNestedList.length; i++) {
+                // 获取一级分类
+                var oneSubject = this.subjectNestedList[i]
+                // 如果当前课程信息的分类id等于当前一级分类，则取出当前一级分类的二级分类
+                if (this.courseInfo.subjectParentId == oneSubject.id) {
+                  this.subSubjectList = oneSubject.children
+                }
+              }
+            })
+            // 获取所有老师
+            this.getTeacherList()
+          })
       },
       // 上传成功之后调用的方法
       handleAvatarSuccess(res, file) {
@@ -154,6 +178,7 @@
         }
         return isJPG && isLt2M
       },
+      // 二级联动
       subjectLevelOneChanged(value) {
         // 遍历所有分类，包含一级分类和二级分类
         for (let i = 0; i < this.subjectNestedList.length; i++) {
@@ -165,17 +190,20 @@
           }
         }
       },
+      // 获取课程分类
       initSubjectList() {
         subject.getNestedTreeList().then(response => {
           this.subjectNestedList = response.data.items
         })
       },
+      // 获取所有老师
       getTeacherList() {
         teacher.getList().then(response => {
           this.teacherList = response.data.items
         })
       },
-      saveOrUpdate() {
+      // 添加
+      addCourseInfo() {
         course.addCourseInfo(this.courseInfo)
           .then(response => {
             this.$message({
@@ -193,6 +221,36 @@
               message: response.message
             })
           })
+      },
+      // 修改
+      updateCourseInfo() {
+        course.updateCourseInfo(this.courseInfo)
+          .then(response => {
+            this.$message({
+              type: 'success',
+              message: '修改信息成功！'
+            })
+            return response
+          })
+          .then(response => {
+            this.$router.push({ path: '/edu/course/chapter/' + response.data.courseId })
+          })
+          .catch(response => {
+            this.$message({
+              type: 'error',
+              message: response.message
+            })
+          })
+      },
+      // 保存或者修改
+      saveOrUpdate() {
+        if (!this.courseInfo.id) {
+          //添加
+          this.addCourseInfo()
+        } else {
+          // 修改
+          this.updateCourseInfo()
+        }
       }
     }
   }

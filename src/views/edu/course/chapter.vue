@@ -76,12 +76,12 @@
       // 上一页
       previous() {
         console.log('previous')
-        this.$router.push({ path: '/edu/course/info/1' })
+        this.$router.push({ path: '/edu/course/info/'+this.courseId })
       },
       // 下一页
       next() {
         console.log('next')
-        this.$router.push({ path: '/edu/course/publish/1' })
+        this.$router.push({ path: '/edu/course/publish/'+this.courseId  })
       }
     }
   }
