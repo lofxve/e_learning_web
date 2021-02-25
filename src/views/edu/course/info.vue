@@ -109,11 +109,11 @@
     data() {
       return {
         courseInfo: defaultForm,
-        saveBtnDisabled: false,// 保存按钮是否禁用
+        saveBtnDisabled: false, // 保存按钮是否禁用
         teacherList: [],
-        subjectNestedList: [],//一级分类列表
-        subSubjectList: [],//二级分类列表
-        BASE_API: process.env.BASE_API, // 接口API地址
+        subjectNestedList: [], // 一级分类列表
+        subSubjectList: [], // 二级分类列表
+        BASE_API: process.env.BASE_API // 接口API地址
       }
     },
     watch: {
