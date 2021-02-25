@@ -9,7 +9,7 @@
       <el-step title="创建课程大纲"/>
       <el-step title="提交审核"/>
     </el-steps>
-    <el-button type="text">添加章节</el-button>
+    <el-button type="text" @click="openDialogChapterForm">添加章节</el-button>
     <ul class="chanpterList">
       <li
         v-for="chapter in chapterNestedList"
@@ -18,8 +18,8 @@
           {{ chapter.title }}
           <span class="acts">
             <el-button type="text">添加课时</el-button>
-            <el-button style="" type="text">编辑</el-button>
-            <el-button type="text">删除</el-button>
+            <el-button style="" type="text" @click="openEditChapter(chapter.id)">编辑</el-button>
+            <el-button type="text" @click="deleteChapter(chapter.id)">删除</el-button>
           </span>
         </p>
         <ul class="chanpterList videoList">
@@ -41,6 +41,22 @@
       <el-button @click="previous">上一步</el-button>
       <el-button :disabled="saveBtnDisabled" type="primary" @click="next">下一步</el-button>
     </div>
+
+    <!-- 添加和修改章节表单 -->
+    <el-dialog :visible.sync="dialogChapterFormVisible" title="添加章节">
+      <el-form :model="chapter" label-width="120px">
+        <el-form-item label="章节标题">
+          <el-input v-model="chapter.title"/>
+        </el-form-item>
+        <el-form-item label="章节排序">
+          <el-input-number v-model="chapter.sort" :min="0" controls-position="right"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="openDialogChapterForm">取 消</el-button>
+        <el-button type="primary" @click="saveOrUpdate">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -50,9 +66,15 @@
   export default {
     data() {
       return {
+        dialogChapterFormVisible: false,// 添加和修改章节表单是否显示
+        chapter: {
+          title: '',
+          sort: 0
+        },// 章节
         saveBtnDisabled: false, // 保存按钮是否禁用
         courseId: '', // 所属课程
         chapterNestedList: []// 章节嵌套课时列表
+
       }
     },
     created() {
@@ -67,6 +89,89 @@
           this.getNestedTreeList(this.courseId)
         }
       },
+      // openDialogChapterForm
+      openDialogChapterForm() {
+        this.dialogChapterFormVisible = true// 如果保存成功则关闭对话框
+        this.getNestedTreeList(this.courseId)// 刷新列表
+        this.chapter.title = ''// 重置章节标题
+        this.chapter.sort = 0// 重置章节标题
+      },
+      // 添加或者修改章节
+      saveOrUpdate() {
+        if (this.chapter.id) {
+          // 修改
+          this.updateChapter()
+        } else {
+          // 添加
+          this.addChapter()
+        }
+      },
+      // 添加章节
+      addChapter() {
+        // 设置课程id
+        this.chapter.courseId = this.courseId
+        chapter.addChapter(this.chapter).then(response => {
+          // 关闭弹框
+          this.dialogChapterFormVisible = false
+          // 提示信息
+          this.$message({
+            type: 'success',
+            message: '添加章节成功!'
+          })
+          // 刷新页面
+          this.getNestedTreeList(this.courseId)
+        })
+      },
+      // 修改章节
+      updateChapter() {
+        chapter.updateChapter(this.chapter).then(response => {
+          // 关闭弹框
+          this.dialogChapterFormVisible = false
+          // 提示信息
+          this.$message({
+            type: 'success',
+            message: '修改章节成功!'
+          })
+          // 刷新页面
+          this.getNestedTreeList(this.courseId)
+        })
+      },
+      // 打开编辑修改
+      openEditChapter(id) {
+        // 弹框
+        this.dialogChapterFormVisible = true
+        // 获取章节信息
+        this.getChapterById(id)
+      },
+      // 根据id获取
+      getChapterById(chapterId) {
+        chapter.getChapterById(chapterId).then(response => {
+          this.chapter = response.data.items
+        })
+      },
+      // 删除章节
+      deleteChapter(chapterId) {
+        // 提示框
+        this.$confirm('此操作将永久删除此记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          // 点击确定后删除
+          chapter.deleteChapter(chapterId)
+            .then((response) => {
+              if (response.code == 20000) {
+                // 提示成功
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                })
+                // 刷新页面
+                this.getNestedTreeList(this.courseId)
+              }
+            })
+        })
+      },
       // 根据课程id查询章节和小结
       getNestedTreeList(courseId) {
         chapter.getNestedTreeList(courseId).then(response => {
@@ -76,12 +181,12 @@
       // 上一页
       previous() {
         console.log('previous')
-        this.$router.push({ path: '/edu/course/info/'+this.courseId })
+        this.$router.push({ path: '/edu/course/info/' + this.courseId })
       },
       // 下一页
       next() {
         console.log('next')
-        this.$router.push({ path: '/edu/course/publish/'+this.courseId  })
+        this.$router.push({ path: '/edu/course/publish/' + this.courseId })
       }
     }
   }
