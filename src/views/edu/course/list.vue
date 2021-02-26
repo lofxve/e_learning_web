@@ -92,13 +92,15 @@
           {{ scope.row.gmtModified.substr(0, 10) }}
         </template>
       </el-table-column>
-      <el-table-column label="价格" width="100" align="center" >
+      <el-table-column label="价格" width="100" align="center">
         <template slot-scope="scope">
-          {{ Number(scope.row.price) === 0 ? '免费' :
-          '¥' + scope.row.price.toFixed(2) }}
+          {{
+            Number(scope.row.price) === 0 ? '免费' :
+              '¥' + scope.row.price.toFixed(2)
+          }}
         </template>
       </el-table-column>
-      <el-table-column prop="buyCount" label="付费学员" width="100" align="center" >
+      <el-table-column prop="buyCount" label="付费学员" width="100" align="center">
         <template slot-scope="scope">
           {{ scope.row.buyCount }}人
         </template>
@@ -112,7 +114,7 @@
           <router-link :to="'/edu/course/chapter/'+scope.row.id">
             <el-button type="text" size="mini" icon="el-icon-edit">编辑课程大纲</el-button>
           </router-link>
-          <el-button type="text" size="mini" icon="el-icon-delete">删除</el-button>
+          <el-button type="text" size="mini" icon="el-icon-delete" @click="removeDataById(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -156,35 +158,62 @@
       }
     },
     methods: {
-      getPageList(page = 1){
+      // 根据id删除课程
+      removeDataById(id) {
+        // 提示框
+        this.$confirm('此操作将永久删除此记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          // 点击确定后删除
+          course.removeById(id)
+            .then((response) => {
+              if (response.code == 20000) {
+                // 提示成功
+                this.$message({
+                  type: 'success',
+                  message: '删除成功!'
+                })
+                // 回到列表页面
+                this.getPageList()
+              }
+            })
+        })
+      },
+      // 分页列表
+      getPageList(page = 1) {
         this.page = page
         this.listLoading = true
-        course.getPageList(this.page,this.limit,this.courseInfoVo).then(response=>{
+        course.getPageList(this.page, this.limit, this.courseInfoVo).then(response => {
           this.list = response.data.rows
           this.total = response.data.total
           this.listLoading = false
         })
       },
+      // 初始化老师
       initTeacherList() {
         teacher.getList().then(response => {
           this.teacherList = response.data.items
         })
       },
+      // 初始化课程分类
       initSubjectList() {
         subject.getNestedTreeList().then(response => {
           this.subjectNestedList = response.data.items
         })
       },
+      // 课程二级分类
       subjectLevelOneChanged(value) {
         for (let i = 0; i < this.subjectNestedList.length; i++) {
           if (this.subjectNestedList[i].id === value) {
             this.subSubjectList = this.subjectNestedList[i].children
-            this.searchObj.subjectId = ''
+            this.courseInfoVo.subjectId = ''
           }
         }
       },
       resetData() {
-        this.searchObj = {}
+        this.courseInfoVo = {}
         this.subSubjectList = [] // 二级分类列表
         this.getPageList()
       }
@@ -204,12 +233,14 @@
     width: 450px;
     overflow: hidden;
   }
+
   .myClassList .info .pic {
     width: 150px;
     height: 90px;
     overflow: hidden;
     float: left;
   }
+
   .myClassList .info .pic a {
     display: block;
     width: 100%;
@@ -217,15 +248,18 @@
     margin: 0;
     padding: 0;
   }
+
   .myClassList .info .pic img {
     display: block;
     width: 100%;
   }
+
   .myClassList td .info .title {
     width: 280px;
     float: right;
     height: 90px;
   }
+
   .myClassList td .info .title a {
     display: block;
     height: 48px;
@@ -234,6 +268,7 @@
     color: #00baf2;
     margin-bottom: 12px;
   }
+
   .myClassList td .info .title p {
     line-height: 20px;
     margin-top: 5px;

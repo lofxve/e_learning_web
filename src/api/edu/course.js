@@ -45,5 +45,12 @@ export default {
       method: 'get',
       params: courseInfoVo
     })
+  },
+  // 删除课程
+  removeById(id) {
+    return request({
+      url: `${api_name}/deleteCourseById/${id}`,
+      method: 'delete'
+    })
   }
 }
