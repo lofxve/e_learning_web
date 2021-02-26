@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-const api_name = "/admin/eduservice/course"
+const api_name = '/admin/eduservice/course'
 
 export default {
   // 添加课程信息
@@ -36,6 +36,14 @@ export default {
     return request({
       url: `${api_name}/publishCourseById/${id}`,
       method: 'post'
+    })
+  },
+  // 分页查询
+  getPageList(page, limit, courseInfoVo) {
+    return request({
+      url: `${api_name}/queryCourseByPage/${page}/${limit}`,
+      method: 'get',
+      params: courseInfoVo
     })
   }
 }
