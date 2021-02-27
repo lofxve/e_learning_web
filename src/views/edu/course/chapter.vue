@@ -194,6 +194,7 @@
         this.video.videoSourceId = ''
         this.video.sort = 0
         this.video.free = 0
+        this.fileList = []
       },
       // 添加或者修改小结
       saveOrUpdateVideo() {
