@@ -107,11 +107,13 @@
 <script>
   import chapter from '@/api/edu/chapter.js'
   import video from '@/api/edu/video.js'
+  import vod from '@/api/edu/vod.js'
 
   export default {
     data() {
       return {
         //=============================================小结=====================================================
+        saveVideoBtnDisabled: true, // 视频确定按钮
         dialogVideoFormVisible: false, // 是否显示课时表单
         chapterId: '', // 课时所在的章节id
         video: {// 课时对象
@@ -142,6 +144,12 @@
 //=============================================小结操作=====================================================
       //成功回调
       handleVodUploadSuccess(response, file, fileList) {
+        this.$message({
+          type: 'success',
+          message: '视频上传成功'
+        })
+        // 提交按钮
+        this.saveVideoBtnDisabled = false
         // 视频id
         this.video.videoSourceId = response.data.videoId
         // 视频名称
@@ -150,6 +158,29 @@
       // 视图上传多于一个视频
       handleUploadExceed(files, fileList) {
         this.$message.warning('想要重新上传视频，请先删除已上传的视频')
+      },
+      // 点击x的时候调用
+      beforeVodRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${file.name}？`)
+      },
+      // 点击确定的时候调用
+      handleVodRemove(file, fileList) {
+        this.removeById()
+      },
+      // 删除方法
+      removeById() {
+        // todo 删除待优化
+        vod.removeById(this.video.videoSourceId).then(response => {
+          this.$message({
+            type: 'success',
+            message: response.message
+          })
+          this.fileList = []
+          // 视频id
+          this.video.videoSourceId = ''
+          // 视频名称
+          this.video.videoOriginalName = ''
+        })
       },
       // 添加小结弹框
       openVideo(chapterId) {
@@ -166,6 +197,7 @@
       },
       // 添加或者修改小结
       saveOrUpdateVideo() {
+        this.saveVideoBtnDisabled = true
         if (this.video.id) {
           // 修改
           this.updateVideo()
@@ -335,12 +367,10 @@
       },
       // 上一页
       previous() {
-        console.log('previous')
         this.$router.push({ path: '/edu/course/info/' + this.courseId })
       },
       // 下一页
       next() {
-        console.log('next')
         this.$router.push({ path: '/edu/course/publish/' + this.courseId })
       }
     }
