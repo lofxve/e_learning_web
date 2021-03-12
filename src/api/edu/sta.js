@@ -7,5 +7,12 @@ export default {
       url: `/admin/staservice/daily/countRegister/${day}`,
       method: 'post'
     })
+  },
+  // 数据显示
+  showChart(searchObj) {
+    return request({
+      url: `/admin/staservice/daily/chartShowsDay/${searchObj.begin}/${searchObj.end}/${searchObj.type}`,
+      method: 'get'
+    })
   }
 }
