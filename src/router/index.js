@@ -151,6 +151,27 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/statistics/daily',
+    component: Layout,
+    redirect: '/statistics/daily/create',
+    name: 'Statistics',
+    meta: { title: '统计分析', icon: 'example'  },
+    children: [
+      {
+        path: 'create',
+        name: 'StatisticsDailyCreate',
+        component: () => import('@/views/statistics/daily/create'),
+        meta: { title: '生成统计', icon: 'table' }
+      },
+      {
+        path: 'show',
+        name: 'StatisticsDailyShow',
+        component: () => import('@/views/statistics/daily/show'),
+        meta: { title: '图表显示', icon: 'tree' }
+      }
+    ]
+  },
+  {
     path: '/form',
     component: Layout,
     children: [
