@@ -26,6 +26,12 @@
           placeholder="选择截止日期"
           value-format="yyyy-MM-dd"/>
       </el-form-item>
+      <el-form-item>
+        <el-radio-group v-model="type">
+          <el-radio-button label="line"></el-radio-button>
+          <el-radio-button label="bar"></el-radio-button>
+        </el-radio-group>
+      </el-form-item>
       <el-button
         :disabled="btnDisabled"
         type="primary"
@@ -33,7 +39,6 @@
         @click="showChart()">查询
       </el-button>
     </el-form>
-
     <div class="chart-container">
       <div id="chart" class="chart" style="height:500px;width:100%"/>
     </div>
@@ -49,8 +54,9 @@
     // 写核心代码
     data() {
       return {
+        type: 'line',// 图表类型
         searchObj: {
-          type: '',
+          type: 'login_num',
           begin: this.getNowTime(1),
           end: this.getNowTime(0)
         },
@@ -66,7 +72,6 @@
         this.initChartData()
         this.setChart()
       },
-
       // 准备图表数据
       initChartData() {
         sta.showChart(this.searchObj).then(response => {
@@ -91,11 +96,9 @@
               this.title = '每日课程数统计'
               break
           }
-
           this.setChart()
         })
       },
-
       // 设置图标参数
       setChart() {
         // 基于准备好的dom，初始化echarts实例
@@ -126,7 +129,7 @@
             // 系列中的数据内容数组
             data: this.yData,
             // 折线图
-            type: 'line'
+            type: this.type
           }],
           dataZoom: [{
             show: true,
